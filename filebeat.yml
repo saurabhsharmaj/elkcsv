@@ -1,0 +1,39 @@
+filebeat.prospectors:
+- input_type: log
+
+  paths:
+    #- /var/log/*.log
+    #- D:\elk\apache-tomcat-8.0.52\logs\*.*
+    - D:\elk\logs\*.*
+  document_type: Tomcat-Server
+  fields:
+        environment: Dev
+  #ignore_older: 2m
+  close_inactive: 10s
+  close_removed: true
+  close_renamed: true
+  clean_removed: true
+  clean_renamed: true
+  scan_frequency: 5s
+  #force_close_files: true
+  #tail_files: true
+  #Tue 10 Jun 2018 10:44:01 BST 
+  #[WARN ] 2018-06-17 07:04:17.193
+  multiline.pattern: '^[[A-Z][[:space:]]][[:space:]][[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}[[:space:]][[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}|^Exception in thread|^[[:alpha:]]{3}[[:space:]][[:digit:]]{2}[[:space:]][[:alpha:]]{3}[[:space:]][[:digit:]]{4}[[:space:]][[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}'
+  multiline.negate: true
+  multiline.match: after
+  
+output.logstash:
+ hosts: ["localhost:5044"]
+############################# Output ##########################################
+filebeat.registry_file: ./filebeat_registry
+############################# Logging #########################################
+logging.to_syslog: true
+logging.selectors: ["beat"]
+logging.level: debug
+logging.to_files: true
+logging.files:
+  path: .
+  name: filebeat.log
+  rotateeverybytes: 10485760 # = 10MB
+  keepfiles: 2
